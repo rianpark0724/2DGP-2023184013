@@ -5,13 +5,13 @@ open_canvas(800, 600)
 update_canvas()
 
 def move_circle():
-    pass # Character go round
+    print("a")
 
 def move_rectangle():
-    pass # Character go square
+    print("b")
 
 def move_triangle():
-    pass # Character go triangle
+    print("c")
 
 while True:
     move_circle()
