@@ -46,7 +46,9 @@ def draw_recX(fromX, toX, y):
         draw_character(x, y)
 
 def draw_recY(fromY, toY, x):
-    print(fromY, toY, x)
+    step = 3 if fromY < toY else -3
+    for y in range(fromY, toY, step):
+        draw_character(x, y)
 
 def move_rectangle():
     draw_recX(400, 700, 500)
