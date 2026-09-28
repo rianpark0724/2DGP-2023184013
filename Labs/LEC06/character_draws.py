@@ -25,7 +25,8 @@ def draw_top():
         draw_character(x, 500)
 
 def draw_right():
-    pass
+    for y in range(500, 100, -5):
+        draw_character(700, y)
 
 def draw_bottom():
     pass
@@ -43,7 +44,7 @@ def move_triangle():
     print("c")
 
 while True:
-    move_circle()
+    # move_circle()
     move_rectangle()
     move_triangle()
 
