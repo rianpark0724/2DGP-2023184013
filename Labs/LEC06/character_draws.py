@@ -13,7 +13,7 @@ def draw_character(x, y):
     delay(0.01)
 
 def move_circle():
-    for degree in range(360):
+    for degree in range(450, 90, -1):
         theta = math.radians(degree)
         x = 400 + 200 * math.cos(theta)
         y = 300 + 200 * math.sin(theta)
@@ -46,7 +46,7 @@ def move_triangle():
     print("c")
 
 while True:
-    # move_circle()
+    move_circle()
     move_rectangle()
     move_triangle()
 
