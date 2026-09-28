@@ -20,9 +20,11 @@ def move_circle():
 
         draw_character(x, y)
 
-def draw_recTop():
-    for x in range(100, 700, 5):
-        draw_character(x, 500)
+def draw_recTopStart():
+    pass
+
+def draw_recTopEnd():
+    pass
 
 def draw_recRight():
     for y in range(500, 100, -5):
@@ -37,10 +39,11 @@ def draw_recLeft():
         draw_character(100, y)
 
 def move_rectangle():
-    draw_recTop()
+    draw_recTopStart()
     draw_recRight()
     draw_recBottom()
     draw_recLeft()
+    draw_recTopEnd()
 
 def draw_triBottom():
     for x in range(100, 700, 5):
@@ -68,6 +71,6 @@ def move_triangle():
 while True:
     move_circle()
     move_rectangle()
-    move_triangle()
+    # move_triangle()
 
 close_canvas()
