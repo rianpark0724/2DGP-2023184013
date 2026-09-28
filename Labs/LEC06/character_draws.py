@@ -52,7 +52,11 @@ def move_rectangle():
 #         draw_character(x, y)
 
 def draw_triMove(fromX, toX, fromY, toY, step):
-    print(fromX, toX, fromY, toY, step)
+    for t in range(0, step, 1):
+            t = t / step
+            x = fromX + (toX - fromX) * t
+            y = fromY + (toY - fromY) * t
+            draw_character(x, y)
 
 def move_triangle():
     draw_triMove(400, 700, 500, 100, 150)
@@ -60,8 +64,8 @@ def move_triangle():
     draw_triMove(100, 400, 100, 500, 150)
 
 while True:
-    # move_circle()
-    # move_rectangle()
+    move_circle()
+    move_rectangle()
     move_triangle()
 
 close_canvas()
