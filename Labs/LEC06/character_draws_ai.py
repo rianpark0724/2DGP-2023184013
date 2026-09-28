@@ -9,17 +9,17 @@ FRAME_DELAY = 0.01
 CIRCLE_CENTER_X = 400
 CIRCLE_CENTER_Y = 300
 CIRCLE_RADIUS = 200
+SHARED_START = (CIRCLE_CENTER_X, CIRCLE_CENTER_Y + CIRCLE_RADIUS)
 
 RECTANGLE_LEFT = 50
 RECTANGLE_RIGHT = 750
 RECTANGLE_BOTTOM = 50
-RECTANGLE_TOP = 550
-RECTANGLE_START = (RECTANGLE_LEFT, RECTANGLE_TOP)
-CONNECTOR_STEP = 5
+RECTANGLE_TOP = SHARED_START[1]
+RECTANGLE_START_X = SHARED_START[0]
 
 TRIANGLE_A = (100, 100)
 TRIANGLE_B = (700, 100)
-TRIANGLE_C = (400, 500)
+TRIANGLE_C = SHARED_START
 TRIANGLE_STEPS = 100
 
 
@@ -30,31 +30,17 @@ def draw_boy(x, y):
 	delay(FRAME_DELAY)
 
 
-def move_between(start, end):
-	start_x, start_y = start
-	end_x, end_y = end
-	distance = math.hypot(end_x - start_x, end_y - start_y)
-	steps = max(1, math.ceil(distance / CONNECTOR_STEP))
-
-	for step in range(1, steps):
-		t = step / steps
-		x = start_x + (end_x - start_x) * t
-		y = start_y + (end_y - start_y) * t
-		draw_boy(x, y)
-	draw_boy(end_x, end_y)
-
-
 def move_circle():
-	for degree in range(360):
+	for degree in range(90, 450):
 		theta = math.radians(degree)
 		x = CIRCLE_CENTER_X + CIRCLE_RADIUS * math.cos(theta)
 		y = CIRCLE_CENTER_Y + CIRCLE_RADIUS * math.sin(theta)
 		draw_boy(x, y)
-	draw_boy(CIRCLE_CENTER_X + CIRCLE_RADIUS, CIRCLE_CENTER_Y)
+	draw_boy(*SHARED_START)
 
 
 def move_top():
-	for x in range(RECTANGLE_LEFT, RECTANGLE_RIGHT + 1, 5):
+	for x in range(RECTANGLE_START_X, RECTANGLE_RIGHT + 1, 5):
 		draw_boy(x, RECTANGLE_TOP)
 
 
@@ -73,11 +59,17 @@ def move_left():
 		draw_boy(RECTANGLE_LEFT, y)
 
 
+def move_top_left():
+	for x in range(RECTANGLE_LEFT, RECTANGLE_START_X + 1, 5):
+		draw_boy(x, RECTANGLE_TOP)
+
+
 def move_rectangle():
 	move_top()
 	move_right()
 	move_bottom()
 	move_left()
+	move_top_left()
 
 
 def move_ab():
@@ -114,9 +106,9 @@ def move_ca():
 
 
 def move_triangle():
+	move_ca()
 	move_ab()
 	move_bc()
-	move_ca()
 
 
 open_canvas(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -124,14 +116,7 @@ boy = load_image('character.png')
 
 while True:
 	move_circle()
-	move_between(
-		(CIRCLE_CENTER_X + CIRCLE_RADIUS, CIRCLE_CENTER_Y), RECTANGLE_START
-	)
 	move_rectangle()
-	move_between(RECTANGLE_START, TRIANGLE_A)
 	move_triangle()
-	move_between(
-		TRIANGLE_A, (CIRCLE_CENTER_X + CIRCLE_RADIUS, CIRCLE_CENTER_Y)
-	)
 
 close_canvas()
