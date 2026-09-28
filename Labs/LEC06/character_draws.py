@@ -54,7 +54,11 @@ def draw_triRight():
         draw_character(x, y)
 
 def draw_triLeft():
-    print("c")
+    for t in range(0, 100, 1):
+        t = t / 100.0
+        x = 400.0 - (300.0 * t)
+        y = 500.0 - (400.0 * t)
+        draw_character(x, y)
 
 def move_triangle():
     draw_triBottom()
@@ -62,8 +66,8 @@ def move_triangle():
     draw_triLeft()
 
 while True:
-    # move_circle()
-    # move_rectangle()
+    move_circle()
+    move_rectangle()
     move_triangle()
 
 close_canvas()
