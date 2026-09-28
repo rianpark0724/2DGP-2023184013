@@ -10,7 +10,9 @@ def move_circle():
     print("a")
 
 def move_rectangle():
-    print("b")
+    clear_canvas()
+    character.draw(400,300)
+    update_canvas()
 
 def move_triangle():
     print("c")
