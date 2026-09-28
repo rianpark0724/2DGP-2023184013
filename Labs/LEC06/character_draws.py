@@ -40,12 +40,17 @@ def draw_recLeft():
     for y in range(100, 500, 3):
         draw_character(100, y)
 
+def draw_recX(fromX, toX, y):
+    step = 3 if fromX < toX else -3
+    for x in range(fromX, toX, step):
+        draw_character(x, y)
+
 def move_rectangle():
-    draw_recTopStart()
+    draw_recX(400, 700, 500)
     draw_recRight()
-    draw_recBottom()
+    draw_recX(700, 100, 100)
     draw_recLeft()
-    draw_recTopEnd()
+    draw_recX(100, 400, 500)
 
 def draw_triRight():
     for t in range(0, 150, 1):
@@ -71,8 +76,8 @@ def move_triangle():
     draw_triLeft()
 
 while True:
-    move_circle()
-    # move_rectangle()
-    move_triangle()
+    # move_circle()
+    move_rectangle()
+    # move_triangle()
 
 close_canvas()
