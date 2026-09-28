@@ -48,8 +48,8 @@ def move_rectangle():
     draw_recTopEnd()
 
 def draw_triRight():
-    for t in range(0, 100, 1):
-        t = t / 100.0
+    for t in range(0, 150, 1):
+        t = t / 150.0
         x = 400.0 + (300.0 * t)
         y = 500.0 - (400.0 * t)
         draw_character(x, y)
@@ -59,8 +59,8 @@ def draw_triBottom():
         draw_character(x, 100)
 
 def draw_triLeft():
-    for t in range(0, 100, 1):
-        t = t / 100.0
+    for t in range(0, 150, 1):
+        t = t / 150.0
         x = 100.0 + (300.0 * t)
         y = 100.0 + (400.0 * t)
         draw_character(x, y)
@@ -72,7 +72,7 @@ def move_triangle():
 
 while True:
     move_circle()
-    move_rectangle()
+    # move_rectangle()
     move_triangle()
 
 close_canvas()
