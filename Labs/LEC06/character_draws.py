@@ -33,10 +33,11 @@ def draw_bottom():
         draw_character(x, 100)
 
 def draw_left():
-    pass
+    for y in range(100, 500, 5):
+        draw_character(100, y)
 
 def move_rectangle():
-    # draw_top()
+    draw_top()
     draw_right()
     draw_bottom()
     draw_left()
