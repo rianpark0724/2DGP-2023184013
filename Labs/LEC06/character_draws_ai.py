@@ -14,6 +14,8 @@ RECTANGLE_LEFT = 50
 RECTANGLE_RIGHT = 750
 RECTANGLE_BOTTOM = 50
 RECTANGLE_TOP = 550
+RECTANGLE_START = (RECTANGLE_LEFT, RECTANGLE_TOP)
+CONNECTOR_STEP = 5
 
 TRIANGLE_A = (100, 100)
 TRIANGLE_B = (700, 100)
@@ -28,12 +30,27 @@ def draw_boy(x, y):
 	delay(FRAME_DELAY)
 
 
+def move_between(start, end):
+	start_x, start_y = start
+	end_x, end_y = end
+	distance = math.hypot(end_x - start_x, end_y - start_y)
+	steps = max(1, math.ceil(distance / CONNECTOR_STEP))
+
+	for step in range(1, steps):
+		t = step / steps
+		x = start_x + (end_x - start_x) * t
+		y = start_y + (end_y - start_y) * t
+		draw_boy(x, y)
+	draw_boy(end_x, end_y)
+
+
 def move_circle():
 	for degree in range(360):
 		theta = math.radians(degree)
 		x = CIRCLE_CENTER_X + CIRCLE_RADIUS * math.cos(theta)
 		y = CIRCLE_CENTER_Y + CIRCLE_RADIUS * math.sin(theta)
 		draw_boy(x, y)
+	draw_boy(CIRCLE_CENTER_X + CIRCLE_RADIUS, CIRCLE_CENTER_Y)
 
 
 def move_top():
@@ -107,7 +124,14 @@ boy = load_image('character.png')
 
 while True:
 	move_circle()
+	move_between(
+		(CIRCLE_CENTER_X + CIRCLE_RADIUS, CIRCLE_CENTER_Y), RECTANGLE_START
+	)
 	move_rectangle()
+	move_between(RECTANGLE_START, TRIANGLE_A)
 	move_triangle()
+	move_between(
+		TRIANGLE_A, (CIRCLE_CENTER_X + CIRCLE_RADIUS, CIRCLE_CENTER_Y)
+	)
 
 close_canvas()
