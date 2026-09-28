@@ -20,36 +20,39 @@ def move_circle():
 
         draw_character(x, y)
 
-def draw_recTopStart():
-    for x in range(400, 700, 3):
-        draw_character(x, 500)
+# def draw_recTopStart():
+#     for x in range(400, 700, 3):
+#         draw_character(x, 500)
 
-def draw_recTopEnd():
-    for x in range(100, 400, 3):
-        draw_character(x, 500)
+# def draw_recTopEnd():
+#     for x in range(100, 400, 3):
+#         draw_character(x, 500)
 
-def draw_recRight():
-    for y in range(500, 100, -3):
-        draw_character(700, y)
+# def draw_recRight():
+#     for y in range(500, 100, -3):
+#         draw_character(700, y)
 
-def draw_recBottom():
-    for x in range(700, 100, -3):
-        draw_character(x, 100)
+# def draw_recBottom():
+#     for x in range(700, 100, -3):
+#         draw_character(x, 100)
 
-def draw_recLeft():
-    for y in range(100, 500, 3):
-        draw_character(100, y)
+# def draw_recLeft():
+#     for y in range(100, 500, 3):
+#         draw_character(100, y)
 
 def draw_recX(fromX, toX, y):
     step = 3 if fromX < toX else -3
     for x in range(fromX, toX, step):
         draw_character(x, y)
 
+def draw_recY(fromY, toY, x):
+    print(fromY, toY, x)
+
 def move_rectangle():
     draw_recX(400, 700, 500)
-    draw_recRight()
+    draw_recY(500, 100, 700)
     draw_recX(700, 100, 100)
-    draw_recLeft()
+    draw_recY(100, 500, 100)
     draw_recX(100, 400, 500)
 
 def draw_triRight():
