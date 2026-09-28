@@ -20,45 +20,48 @@ def move_circle():
 
         draw_character(x, y)
 
-def draw_recX(fromX, toX, y):
+def draw_moveX(fromX, toX, y):
     step = 3 if fromX < toX else -3
     for x in range(fromX, toX, step):
         draw_character(x, y)
 
-def draw_recY(fromY, toY, x):
+def draw_moveY(fromY, toY, x):
     step = 3 if fromY < toY else -3
     for y in range(fromY, toY, step):
         draw_character(x, y)
 
 def move_rectangle():
-    draw_recX(400, 700, 500)
-    draw_recY(500, 100, 700)
-    draw_recX(700, 100, 100)
-    draw_recY(100, 500, 100)
-    draw_recX(100, 400, 500)
+    draw_moveX(400, 700, 500)
+    draw_moveY(500, 100, 700)
+    draw_moveX(700, 100, 100)
+    draw_moveY(100, 500, 100)
+    draw_moveX(100, 400, 500)
 
-def draw_triRight():
-    for t in range(0, 150, 1):
-        t = t / 150.0
-        x = 400.0 + (300.0 * t)
-        y = 500.0 - (400.0 * t)
-        draw_character(x, y)
+# def draw_triRight():
+#     for t in range(0, 150, 1):
+#         t = t / 150.0
+#         x = 400.0 + (300.0 * t)
+#         y = 500.0 - (400.0 * t)
+#         draw_character(x, y)
 
-def draw_triLeft():
-    for t in range(0, 150, 1):
-        t = t / 150.0
-        x = 100.0 + (300.0 * t)
-        y = 100.0 + (400.0 * t)
-        draw_character(x, y)
+# def draw_triLeft():
+#     for t in range(0, 150, 1):
+#         t = t / 150.0
+#         x = 100.0 + (300.0 * t)
+#         y = 100.0 + (400.0 * t)
+#         draw_character(x, y)
+
+def draw_triMove(fromX, toX, fromY, toY, step):
+    print(fromX, toX, fromY, toY, step)
 
 def move_triangle():
-    draw_triRight()
-    draw_recX(700, 100, 100)
-    draw_triLeft()
+    draw_triMove(400, 700, 500, 100, 150)
+    draw_moveX(700, 100, 100)
+    draw_triMove(100, 400, 100, 500, 150)
 
 while True:
-    move_circle()
-    move_rectangle()
+    # move_circle()
+    # move_rectangle()
     move_triangle()
 
 close_canvas()
