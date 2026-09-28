@@ -21,10 +21,12 @@ def move_circle():
         draw_character(x, y)
 
 def draw_recTopStart():
-    pass
+    for x in range(400, 700, 5):
+        draw_character(x, 500)
 
 def draw_recTopEnd():
-    pass
+    for x in range(100, 400, 5):
+        draw_character(x, 500)
 
 def draw_recRight():
     for y in range(500, 100, -5):
