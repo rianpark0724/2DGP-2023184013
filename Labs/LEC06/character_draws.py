@@ -12,13 +12,13 @@ def draw_character(x, y):
     update_canvas()
     delay(0.01)
 
-def move_circle():
-    for degree in range(450, 90, -1):
+def move_circle(x, y, radius, start_degree):
+    for degree in range(start_degree, start_degree - 360, -1):
         theta = math.radians(degree)
-        x = 400 + 200 * math.cos(theta)
-        y = 300 + 200 * math.sin(theta)
+        ax = x + radius * math.cos(theta)
+        ay = y + radius * math.sin(theta)
 
-        draw_character(x, y)
+        draw_character(ax, ay)
 
 def draw_moveX(fromX, toX, y):
     step = 3 if fromX < toX else -3
@@ -50,7 +50,7 @@ def move_triangle(x1, y1, x2, y2, x3, y3):
     draw_triMove(x3, x1, y3, y1, 150)
 
 while True:
-    move_circle()
+    move_circle(400, 300, 200, 450)
     move_rectangle(400, 500, 700, 500, 700, 100, 100, 100, 100, 500)
     move_triangle(400, 500, 700, 100, 100, 100)
 
