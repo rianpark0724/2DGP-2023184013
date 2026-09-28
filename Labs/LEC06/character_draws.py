@@ -29,13 +29,14 @@ def draw_right():
         draw_character(700, y)
 
 def draw_bottom():
-    pass
+    for x in range(700, 100, -5):
+        draw_character(x, 100)
 
 def draw_left():
     pass
 
 def move_rectangle():
-    draw_top()
+    # draw_top()
     draw_right()
     draw_bottom()
     draw_left()
