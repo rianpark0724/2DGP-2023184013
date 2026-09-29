@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 09단계: 캐릭터 비율 유지 확대."""
+"""Drill #8 애니메이션 뷰어 — 10단계: 프레임 기준점으로 중앙 정렬."""
 
 import json
 from pathlib import Path
@@ -33,6 +33,22 @@ def load_animations(path):
     return data["animations"]
 
 
+def get_draw_position(frame, display_width, display_height, target_x, target_y):
+    """프레임의 기준점이 화면의 목표 위치에 오도록 그리기 중심을 계산한다.
+
+    JSON의 anchor_x, anchor_y는 잘라낸 프레임의 좌상단 기준 좌표다.
+    생략하면 프레임 중심을 사용한다. 예: 110×166 프레임은 (55, 83).
+    """
+    anchor_x = frame.get("anchor_x", frame["width"] / 2)
+    anchor_y = frame.get("anchor_y", frame["height"] / 2)
+
+    # 실제 출력 크기를 사용해 반올림된 확대 크기에도 기준점을 맞춘다.
+    draw_x = target_x + (0.5 - anchor_x / frame["width"]) * display_width
+    # 프레임의 Y는 아래로, 캔버스의 Y는 위로 증가하므로 부호가 다르다.
+    draw_y = target_y + (anchor_y / frame["height"] - 0.5) * display_height
+    return draw_x, draw_y
+
+
 def main():
     """첫 프레임을 확대해 중앙에 표시하고 창 닫기 또는 Escape로 종료한다."""
     if not SPRITE_SHEET_PATH.is_file():
@@ -49,6 +65,13 @@ def main():
     display_scale = CANVAS_HEIGHT * CHARACTER_HEIGHT_RATIO / first_frame["height"]
     display_width = round(first_frame["width"] * display_scale)
     display_height = round(first_frame["height"] * display_scale)
+    draw_x, draw_y = get_draw_position(
+        first_frame,
+        display_width,
+        display_height,
+        CANVAS_WIDTH / 2,
+        CANVAS_HEIGHT / 2,
+    )
 
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
 
@@ -78,8 +101,8 @@ def main():
                 frame_bottom,
                 first_frame["width"],
                 first_frame["height"],
-                CANVAS_WIDTH // 2,
-                CANVAS_HEIGHT // 2,
+                draw_x,
+                draw_y,
                 display_width,
                 display_height,
             )
