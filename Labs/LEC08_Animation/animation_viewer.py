@@ -1,7 +1,9 @@
-"""Drill #8 애니메이션 뷰어 — 04단계: 창과 기본 렌더링 루프."""
+"""Drill #8 애니메이션 뷰어 — 05단계: 창 닫기와 Escape 종료."""
 
 from pico2d import (
+    SDL_KEYDOWN,
     SDL_QUIT,
+    SDLK_ESCAPE,
     clear_canvas,
     close_canvas,
     delay,
@@ -17,7 +19,7 @@ LOOP_DELAY = 0.01  # 빈 화면에서도 루프가 CPU를 계속 점유하지 �
 
 
 def main():
-    """창을 열고 배경을 갱신하다가 창 닫기 요청을 받으면 종료한다."""
+    """배경을 갱신하다가 창 닫기 또는 Escape 입력을 받으면 종료한다."""
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
 
     try:
@@ -26,6 +28,8 @@ def main():
             # 창이 응답하도록 매 반복에서 운영체제 이벤트를 처리한다.
             for event in get_events():
                 if event.type == SDL_QUIT:
+                    running = False
+                elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                     running = False
 
             if not running:
