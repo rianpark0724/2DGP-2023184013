@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 12단계: 시간 기반 단일 애니메이션 재생."""
+"""Drill #8 애니메이션 뷰어 — 13단계: 단일 동작 반복 재생."""
 
 import json
 from pathlib import Path
@@ -52,14 +52,14 @@ def get_draw_position(frame, display_width, display_height, target_x, target_y):
 
 
 def main():
-    """첫 동작을 한 번 재생한 뒤 마지막 프레임을 유지한다."""
+    """첫 동작을 계속 반복하고 창 닫기 또는 Escape로 종료한다."""
     if not SPRITE_SHEET_PATH.is_file():
         raise FileNotFoundError(
             f"스프라이트 시트를 찾을 수 없습니다: {SPRITE_SHEET_PATH}\n"
             "레이무 시트를 LEC08/assets/reimu_sheet.png로 배치해 주세요."
         )
 
-    # 이번 단계에서는 첫 동작을 한 번만 재생한다.
+    # 이번 단계에서는 첫 동작만 반복 재생한다.
     animations = load_animations(ANIMATION_DATA_PATH)
     frames = animations[0]["frames"]
     first_frame = frames[0]
@@ -90,7 +90,8 @@ def main():
 
             # 실제 경과 시간으로 프레임을 선택해 화면 갱신 횟수에 의존하지 않는다.
             elapsed_time = perf_counter() - animation_started_at
-            frame_index = min(int(elapsed_time * ANIMATION_FPS), len(frames) - 1)
+            # 마지막 프레임의 표시 시간이 끝나면 첫 프레임으로 돌아간다.
+            frame_index = int(elapsed_time * ANIMATION_FPS) % len(frames)
             frame = frames[frame_index]
 
             # 확대 배율은 고정하고 현재 프레임의 크기와 기준점을 적용한다.
