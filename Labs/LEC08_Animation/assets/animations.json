@@ -286,6 +286,102 @@
           "anchor_y": 68
         }
       ]
+    },
+    {
+      "id": "attack",
+      "name": "일반 공격 · 지팡이 찌르기",
+      "frames": [
+        {
+          "id": "attack_01",
+          "left": 1,
+          "top": 1976,
+          "width": 143,
+          "height": 159,
+          "anchor_x": 84,
+          "anchor_y": 83
+        },
+        {
+          "id": "attack_02",
+          "left": 145,
+          "top": 2006,
+          "width": 146,
+          "height": 128,
+          "anchor_x": 66,
+          "anchor_y": 53
+        },
+        {
+          "id": "attack_03",
+          "left": 293,
+          "top": 1989,
+          "width": 110,
+          "height": 145,
+          "anchor_x": 57,
+          "anchor_y": 70
+        },
+        {
+          "id": "attack_04",
+          "left": 405,
+          "top": 1989,
+          "width": 212,
+          "height": 121,
+          "anchor_x": 77,
+          "anchor_y": 70
+        },
+        {
+          "id": "attack_05",
+          "left": 620,
+          "top": 1993,
+          "width": 212,
+          "height": 117,
+          "anchor_x": 79,
+          "anchor_y": 66
+        },
+        {
+          "id": "attack_06",
+          "left": 835,
+          "top": 1993,
+          "width": 163,
+          "height": 133,
+          "anchor_x": 43,
+          "anchor_y": 66
+        },
+        {
+          "id": "attack_07",
+          "left": 1001,
+          "top": 1989,
+          "width": 118,
+          "height": 145,
+          "anchor_x": 70,
+          "anchor_y": 70
+        },
+        {
+          "id": "attack_08",
+          "left": 1122,
+          "top": 1981,
+          "width": 124,
+          "height": 153,
+          "anchor_x": 68,
+          "anchor_y": 78
+        },
+        {
+          "id": "attack_09",
+          "left": 1248,
+          "top": 1961,
+          "width": 129,
+          "height": 173,
+          "anchor_x": 76,
+          "anchor_y": 98
+        },
+        {
+          "id": "attack_10",
+          "left": 1379,
+          "top": 1961,
+          "width": 155,
+          "height": 173,
+          "anchor_x": 100,
+          "anchor_y": 98
+        }
+      ]
     }
   ]
 }
