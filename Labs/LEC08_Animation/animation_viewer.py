@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 22단계: 입력에 응답하는 1초 대기 상태."""
+"""Drill #8 애니메이션 뷰어 — 23단계: 동작 순차 전환과 전체 무한 반복."""
 
 import json
 from math import isfinite
@@ -173,7 +173,7 @@ def begin_animation(animation):
 
 
 def main():
-    """선택한 동작을 5회 재생하고 1초 대기한 뒤 완료 상태를 유지한다."""
+    """각 동작을 5회 재생하고 1초 대기하며 전체 순서를 무한 반복한다."""
     if not is_finite_number(DEFAULT_ANIMATION_FPS) or DEFAULT_ANIMATION_FPS <= 0:
         raise ValueError("DEFAULT_ANIMATION_FPS는 0보다 큰 유한한 수여야 합니다.")
 
@@ -183,14 +183,15 @@ def main():
             "레이무 시트를 LEC08/assets/reimu_sheet.png로 배치해 주세요."
         )
 
-    # 자동 순환을 구현하기 전에는 ID로 선택한 동작을 개별 확인한다.
+    # JSON에 등록된 순서대로 순환하되 시작할 동작은 ID로 찾는다.
     animations = load_animations(ANIMATION_DATA_PATH)
-    animation = next(
-        (item for item in animations if item.get("id") == PREVIEW_ANIMATION_ID),
+    animation_index = next(
+        (index for index, item in enumerate(animations) if item.get("id") == PREVIEW_ANIMATION_ID),
         None,
     )
-    if animation is None:
-        raise ValueError(f"미리보기 동작을 찾을 수 없습니다: {PREVIEW_ANIMATION_ID}")
+    if animation_index is None:
+        raise ValueError(f"시작할 동작을 찾을 수 없습니다: {PREVIEW_ANIMATION_ID}")
+    animation = animations[animation_index]
     first_frame = animations[0]["frames"][0]
 
     # 대기의 첫 프레임을 기준으로 배율을 고정해 동작이 달라도 체격을 유지한다.
@@ -204,6 +205,7 @@ def main():
         validate_frame_bounds(animations, sprite_sheet)
         print(f"스프라이트 로딩 완료: {SPRITE_SHEET_PATH.name}")
         print("동작 선택: 1 대기 / 2 이동 / 3 일반 공격 / 4 특수 공격")
+        print(f"자동 순환: 각 동작 {REPEAT_LIMIT}회 재생 → {WAIT_SECONDS:g}초 대기 → 다음 동작")
 
         # 이미지 로딩 시간은 재생 시간에서 제외한다.
         frames, animation_fps, animation_started_at = begin_animation(animation)
@@ -224,7 +226,8 @@ def main():
                         break
                     selected_index = ANIMATION_KEYS.get(event.key)
                     if selected_index is not None and selected_index < len(animations):
-                        animation = animations[selected_index]
+                        animation_index = selected_index
+                        animation = animations[animation_index]
                         frames, animation_fps, animation_started_at = begin_animation(animation)
                         completed_loops = 0
                         frame_index = 0
@@ -255,10 +258,16 @@ def main():
             elif playback_state == "waiting":
                 # 긴 정지 호출 없이 시간을 확인하므로 위의 이벤트 처리가 계속된다.
                 if now - waiting_started_at >= WAIT_SECONDS:
-                    playback_state = "finished"
-                    print("1초 대기 완료: 숫자 1~4로 다시 시작할 수 있습니다.")
+                    # 마지막 동작 다음에는 첫 동작으로 돌아간다.
+                    animation_index = (animation_index + 1) % len(animations)
+                    animation = animations[animation_index]
+                    frames, animation_fps, animation_started_at = begin_animation(animation)
+                    completed_loops = 0
+                    frame_index = 0
+                    playback_state = "playing"
+                    waiting_started_at = None
 
-            # 대기 및 완료 상태에서는 마지막 프레임을 계속 그린다.
+            # 대기 중에는 마지막 프레임, 동작 전환 직후에는 새 첫 프레임을 그린다.
             frame = frames[frame_index]
 
             clear_canvas()
