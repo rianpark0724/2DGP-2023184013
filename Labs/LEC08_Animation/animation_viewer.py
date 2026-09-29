@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 20단계: 애니메이션 완주 횟수 계산."""
+"""Drill #8 애니메이션 뷰어 — 21단계: 5회 재생 후 마지막 프레임 유지."""
 
 import json
 from math import isfinite
@@ -27,6 +27,7 @@ CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 CHARACTER_HEIGHT_RATIO = 0.55  # 첫 프레임을 창 높이의 55% 크기로 표시한다.
 DEFAULT_ANIMATION_FPS = 10  # JSON에 fps가 없을 때 사용하는 기본 속도.
+REPEAT_LIMIT = 5  # 한 동작을 완전히 재생할 횟수.
 PREVIEW_ANIMATION_ID = "idle"  # 시작할 동작. 실행 중 숫자 1~4로 바꿀 수 있다.
 ANIMATION_KEYS = {SDLK_1: 0, SDLK_2: 1, SDLK_3: 2, SDLK_4: 3}
 LOOP_DELAY = 0.01  # 루프가 CPU를 계속 점유하지 않도록 양보한다.
@@ -171,7 +172,7 @@ def begin_animation(animation):
 
 
 def main():
-    """선택한 동작을 계속 반복하고 창 닫기 또는 Escape로 종료한다."""
+    """선택한 동작을 5회 재생한 뒤 마지막 프레임을 유지한다."""
     if not is_finite_number(DEFAULT_ANIMATION_FPS) or DEFAULT_ANIMATION_FPS <= 0:
         raise ValueError("DEFAULT_ANIMATION_FPS는 0보다 큰 유한한 수여야 합니다.")
 
@@ -232,10 +233,18 @@ def main():
             # 몫은 완주 횟수, 나머지는 현재 프레임이다. 마지막 프레임의
             # 표시 시간이 끝나야 몫이 증가하므로 마지막 자세 진입과 구분된다.
             current_loops, frame_index = divmod(elapsed_frames, len(frames))
+            # 5회차 마지막 프레임의 표시 시간이 끝나면 그 자세를 유지한다.
+            # 시간이 더 흘러도 6회차로 넘어가거나 완료 횟수가 증가하지 않는다.
+            current_loops = min(current_loops, REPEAT_LIMIT)
+            if current_loops == REPEAT_LIMIT:
+                frame_index = len(frames) - 1
+
             if current_loops > completed_loops:
                 # 갱신이 늦어져도 시간으로 계산한 전체 완주 횟수를 반영한다.
                 completed_loops = current_loops
                 print(f"완주: {animation.get('name', animation.get('id'))} — {completed_loops}회")
+                if completed_loops == REPEAT_LIMIT:
+                    print("5회 재생 완료: 마지막 프레임 유지. 숫자 1~4로 다시 시작할 수 있습니다.")
             frame = frames[frame_index]
 
             clear_canvas()
