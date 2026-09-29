@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 13단계: 단일 동작 반복 재생."""
+"""Drill #8 애니메이션 뷰어 — 14단계: 가변 크기 프레임 렌더링 분리."""
 
 import json
 from pathlib import Path
@@ -51,6 +51,32 @@ def get_draw_position(frame, display_width, display_height, target_x, target_y):
     return draw_x, draw_y
 
 
+def draw_frame(sprite_sheet, frame, display_scale, target_x, target_y):
+    """크기가 서로 다른 프레임을 공통 배율과 개별 기준점으로 그린다.
+
+    원본 영역과 출력 크기를 구분한다. 모든 프레임을 같은 사각형에
+    맞추지 않고 각 프레임의 폭과 높이에 동일한 확대 배율을 적용한다.
+    """
+    display_width = round(frame["width"] * display_scale)
+    display_height = round(frame["height"] * display_scale)
+    draw_x, draw_y = get_draw_position(
+        frame, display_width, display_height, target_x, target_y
+    )
+
+    # pico2d의 잘라내기 좌표는 좌하단 기준이므로 Y 좌표를 변환한다.
+    frame_bottom = sprite_sheet.h - frame["top"] - frame["height"]
+    sprite_sheet.clip_draw(
+        frame["left"],
+        frame_bottom,
+        frame["width"],
+        frame["height"],
+        draw_x,
+        draw_y,
+        display_width,
+        display_height,
+    )
+
+
 def main():
     """첫 동작을 계속 반복하고 창 닫기 또는 Escape로 종료한다."""
     if not SPRITE_SHEET_PATH.is_file():
@@ -94,29 +120,13 @@ def main():
             frame_index = int(elapsed_time * ANIMATION_FPS) % len(frames)
             frame = frames[frame_index]
 
-            # 확대 배율은 고정하고 현재 프레임의 크기와 기준점을 적용한다.
-            display_width = round(frame["width"] * display_scale)
-            display_height = round(frame["height"] * display_scale)
-            draw_x, draw_y = get_draw_position(
+            clear_canvas()
+            draw_frame(
+                sprite_sheet,
                 frame,
-                display_width,
-                display_height,
+                display_scale,
                 CANVAS_WIDTH / 2,
                 CANVAS_HEIGHT / 2,
-            )
-            # pico2d의 잘라내기 좌표는 좌하단 기준이므로 Y 좌표를 변환한다.
-            frame_bottom = sprite_sheet.h - frame["top"] - frame["height"]
-
-            clear_canvas()
-            sprite_sheet.clip_draw(
-                frame["left"],
-                frame_bottom,
-                frame["width"],
-                frame["height"],
-                draw_x,
-                draw_y,
-                display_width,
-                display_height,
             )
             update_canvas()
             delay(LOOP_DELAY)
