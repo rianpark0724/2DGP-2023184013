@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 19단계: 동작별 프레임 수·속도와 전환."""
+"""Drill #8 애니메이션 뷰어 — 20단계: 애니메이션 완주 횟수 계산."""
 
 import json
 from math import isfinite
@@ -205,6 +205,7 @@ def main():
 
         # 이미지 로딩 시간은 재생 시간에서 제외한다.
         frames, animation_fps, animation_started_at = begin_animation(animation)
+        completed_loops = 0
         running = True
         while running:
             # 창이 응답하도록 매 반복에서 운영체제 이벤트를 처리한다.
@@ -220,14 +221,21 @@ def main():
                     if selected_index is not None and selected_index < len(animations):
                         animation = animations[selected_index]
                         frames, animation_fps, animation_started_at = begin_animation(animation)
+                        completed_loops = 0
 
             if not running:
                 break
 
             # 실제 경과 시간으로 프레임을 선택해 화면 갱신 횟수에 의존하지 않는다.
             elapsed_time = perf_counter() - animation_started_at
-            # 마지막 프레임의 표시 시간이 끝나면 첫 프레임으로 돌아간다.
-            frame_index = int(elapsed_time * animation_fps) % len(frames)
+            elapsed_frames = int(elapsed_time * animation_fps)
+            # 몫은 완주 횟수, 나머지는 현재 프레임이다. 마지막 프레임의
+            # 표시 시간이 끝나야 몫이 증가하므로 마지막 자세 진입과 구분된다.
+            current_loops, frame_index = divmod(elapsed_frames, len(frames))
+            if current_loops > completed_loops:
+                # 갱신이 늦어져도 시간으로 계산한 전체 완주 횟수를 반영한다.
+                completed_loops = current_loops
+                print(f"완주: {animation.get('name', animation.get('id'))} — {completed_loops}회")
             frame = frames[frame_index]
 
             clear_canvas()
