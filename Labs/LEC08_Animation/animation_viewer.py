@@ -22,11 +22,11 @@ LOOP_DELAY = 0.01  # 빈 화면에서도 루프가 CPU를 계속 점유하지 �
 BASE_DIR = Path(__file__).resolve().parent
 SPRITE_SHEET_PATH = BASE_DIR / "assets" / "reimu_sheet.png"
 
-# 첨부된 899×2048 시트의 왼쪽 위 첫 자세. 좌상단 기준으로 기록한다.
+# 사용자가 지정한 첫 프레임 영역. 원본 이미지의 좌상단 기준이다.
 FIRST_FRAME_LEFT = 0
-FIRST_FRAME_TOP = 27
-FIRST_FRAME_WIDTH = 34
-FIRST_FRAME_HEIGHT = 52
+FIRST_FRAME_TOP = 94
+FIRST_FRAME_WIDTH = 110
+FIRST_FRAME_HEIGHT = 166
 
 
 def main():
