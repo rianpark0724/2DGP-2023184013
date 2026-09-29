@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 06단계: 스프라이트 로딩과 자료 경로."""
+"""Drill #8 애니메이션 뷰어 — 07단계: 첫 캐릭터 프레임 표시."""
 
 from pathlib import Path
 
@@ -22,9 +22,15 @@ LOOP_DELAY = 0.01  # 빈 화면에서도 루프가 CPU를 계속 점유하지 �
 BASE_DIR = Path(__file__).resolve().parent
 SPRITE_SHEET_PATH = BASE_DIR / "assets" / "reimu_sheet.png"
 
+# 첨부된 899×2048 시트의 왼쪽 위 첫 자세. 좌상단 기준으로 기록한다.
+FIRST_FRAME_LEFT = 0
+FIRST_FRAME_TOP = 27
+FIRST_FRAME_WIDTH = 34
+FIRST_FRAME_HEIGHT = 52
+
 
 def main():
-    """배경을 갱신하다가 창 닫기 또는 Escape 입력을 받으면 종료한다."""
+    """첫 프레임을 중앙에 표시하고 창 닫기 또는 Escape로 종료한다."""
     if not SPRITE_SHEET_PATH.is_file():
         raise FileNotFoundError(
             f"스프라이트 시트를 찾을 수 없습니다: {SPRITE_SHEET_PATH}\n"
@@ -37,6 +43,9 @@ def main():
         # 이미지는 캔버스를 연 뒤 한 번만 불러오고, 반복문에서 재사용한다.
         sprite_sheet = load_image(str(SPRITE_SHEET_PATH))
         print(f"스프라이트 로딩 완료: {SPRITE_SHEET_PATH.name}")
+
+        # pico2d의 잘라내기 좌표는 좌하단 기준이므로 Y 좌표를 변환한다.
+        frame_bottom = sprite_sheet.h - FIRST_FRAME_TOP - FIRST_FRAME_HEIGHT
 
         running = True
         while running:
@@ -51,7 +60,14 @@ def main():
                 break
 
             clear_canvas()
-            # 이후 단계에서 여기에 캐릭터 프레임을 그린다.
+            sprite_sheet.clip_draw(
+                FIRST_FRAME_LEFT,
+                frame_bottom,
+                FIRST_FRAME_WIDTH,
+                FIRST_FRAME_HEIGHT,
+                CANVAS_WIDTH // 2,
+                CANVAS_HEIGHT // 2,
+            )
             update_canvas()
             delay(LOOP_DELAY)
     finally:
