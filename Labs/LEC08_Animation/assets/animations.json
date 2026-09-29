@@ -1,0 +1,16 @@
+{
+  "animations": [
+    {
+      "id": "first_pose",
+      "name": "첫 자세",
+      "frames": [
+        {
+          "left": 0,
+          "top": 94,
+          "width": 110,
+          "height": 166
+        }
+      ]
+    }
+  ]
+}
