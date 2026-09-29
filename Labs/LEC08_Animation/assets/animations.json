@@ -171,7 +171,8 @@
           "anchor_x": 60,
           "anchor_y": 89
         }
-      ]
+      ],
+      "fps": 8
     },
     {
       "id": "move",
@@ -285,7 +286,8 @@
           "anchor_x": 143,
           "anchor_y": 68
         }
-      ]
+      ],
+      "fps": 12
     },
     {
       "id": "attack",
@@ -381,7 +383,8 @@
           "anchor_x": 100,
           "anchor_y": 98
         }
-      ]
+      ],
+      "fps": 12
     },
     {
       "id": "special",
@@ -522,7 +525,8 @@
           "anchor_x": 62,
           "anchor_y": 91
         }
-      ]
+      ],
+      "fps": 10
     }
   ]
 }

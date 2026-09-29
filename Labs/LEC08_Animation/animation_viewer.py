@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 18단계: 특수 공격 동작 추가."""
+"""Drill #8 애니메이션 뷰어 — 19단계: 동작별 프레임 수·속도와 전환."""
 
 import json
 from math import isfinite
@@ -8,6 +8,10 @@ from time import perf_counter
 from pico2d import (
     SDL_KEYDOWN,
     SDL_QUIT,
+    SDLK_1,
+    SDLK_2,
+    SDLK_3,
+    SDLK_4,
     SDLK_ESCAPE,
     clear_canvas,
     close_canvas,
@@ -22,8 +26,9 @@ from pico2d import (
 CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 CHARACTER_HEIGHT_RATIO = 0.55  # 첫 프레임을 창 높이의 55% 크기로 표시한다.
-ANIMATION_FPS = 10  # 애니메이션 재생 속도. 화면 갱신 속도와 별개다.
-PREVIEW_ANIMATION_ID = "special"  # "idle", "move", "attack", "special" 중 선택한다.
+DEFAULT_ANIMATION_FPS = 10  # JSON에 fps가 없을 때 사용하는 기본 속도.
+PREVIEW_ANIMATION_ID = "idle"  # 시작할 동작. 실행 중 숫자 1~4로 바꿀 수 있다.
+ANIMATION_KEYS = {SDLK_1: 0, SDLK_2: 1, SDLK_3: 2, SDLK_4: 3}
 LOOP_DELAY = 0.01  # 루프가 CPU를 계속 점유하지 않도록 양보한다.
 BASE_DIR = Path(__file__).resolve().parent
 SPRITE_SHEET_PATH = BASE_DIR / "assets" / "reimu_sheet.png"
@@ -69,6 +74,9 @@ def validate_animations(animations):
         if not isinstance(animation, dict):
             raise ValueError(f"동작 {animation_index}: 동작 데이터는 객체여야 합니다.")
         label = f"동작 {animation_index} ({animation.get('name', animation.get('id', '이름 없음'))})"
+        fps = animation.get("fps", DEFAULT_ANIMATION_FPS)
+        if not is_finite_number(fps) or fps <= 0:
+            raise ValueError(f"{label}: fps는 0보다 큰 유한한 수여야 합니다. 현재 값: {fps!r}")
         frames = animation.get("frames")
         if not isinstance(frames, list) or not frames:
             raise ValueError(f"{label}: frames는 하나 이상의 프레임을 가진 목록이어야 합니다.")
@@ -154,10 +162,18 @@ def draw_frame(sprite_sheet, frame, display_scale, target_x, target_y):
     )
 
 
+def begin_animation(animation):
+    """선택한 동작의 목록·속도를 적용하고 첫 프레임부터 시작한다."""
+    frames = animation["frames"]
+    fps = animation.get("fps", DEFAULT_ANIMATION_FPS)
+    print(f"재생 동작: {animation.get('name', animation.get('id'))} ({len(frames)}프레임, {fps} FPS)")
+    return frames, fps, perf_counter()
+
+
 def main():
     """선택한 동작을 계속 반복하고 창 닫기 또는 Escape로 종료한다."""
-    if not is_finite_number(ANIMATION_FPS) or ANIMATION_FPS <= 0:
-        raise ValueError("ANIMATION_FPS는 0보다 큰 유한한 수여야 합니다.")
+    if not is_finite_number(DEFAULT_ANIMATION_FPS) or DEFAULT_ANIMATION_FPS <= 0:
+        raise ValueError("DEFAULT_ANIMATION_FPS는 0보다 큰 유한한 수여야 합니다.")
 
     if not SPRITE_SHEET_PATH.is_file():
         raise FileNotFoundError(
@@ -173,7 +189,6 @@ def main():
     )
     if animation is None:
         raise ValueError(f"미리보기 동작을 찾을 수 없습니다: {PREVIEW_ANIMATION_ID}")
-    frames = animation["frames"]
     first_frame = animations[0]["frames"][0]
 
     # 대기의 첫 프레임을 기준으로 배율을 고정해 동작이 달라도 체격을 유지한다.
@@ -186,18 +201,25 @@ def main():
         sprite_sheet = load_image(str(SPRITE_SHEET_PATH))
         validate_frame_bounds(animations, sprite_sheet)
         print(f"스프라이트 로딩 완료: {SPRITE_SHEET_PATH.name}")
-        print(f"재생 동작: {animation.get('name', PREVIEW_ANIMATION_ID)} ({len(frames)}프레임)")
+        print("동작 선택: 1 대기 / 2 이동 / 3 일반 공격 / 4 특수 공격")
 
         # 이미지 로딩 시간은 재생 시간에서 제외한다.
-        animation_started_at = perf_counter()
+        frames, animation_fps, animation_started_at = begin_animation(animation)
         running = True
         while running:
             # 창이 응답하도록 매 반복에서 운영체제 이벤트를 처리한다.
             for event in get_events():
                 if event.type == SDL_QUIT:
                     running = False
-                elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-                    running = False
+                    break
+                elif event.type == SDL_KEYDOWN:
+                    if event.key == SDLK_ESCAPE:
+                        running = False
+                        break
+                    selected_index = ANIMATION_KEYS.get(event.key)
+                    if selected_index is not None and selected_index < len(animations):
+                        animation = animations[selected_index]
+                        frames, animation_fps, animation_started_at = begin_animation(animation)
 
             if not running:
                 break
@@ -205,7 +227,7 @@ def main():
             # 실제 경과 시간으로 프레임을 선택해 화면 갱신 횟수에 의존하지 않는다.
             elapsed_time = perf_counter() - animation_started_at
             # 마지막 프레임의 표시 시간이 끝나면 첫 프레임으로 돌아간다.
-            frame_index = int(elapsed_time * ANIMATION_FPS) % len(frames)
+            frame_index = int(elapsed_time * animation_fps) % len(frames)
             frame = frames[frame_index]
 
             clear_canvas()
