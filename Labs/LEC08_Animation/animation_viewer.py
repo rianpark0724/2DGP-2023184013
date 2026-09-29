@@ -1,6 +1,7 @@
-"""Drill #8 애니메이션 뷰어 — 23단계: 동작 순차 전환과 전체 무한 반복."""
+"""Drill #8 애니메이션 뷰어 — 24단계: 현재 동작과 반복 상태 안내."""
 
 import json
+import os
 from math import isfinite
 from pathlib import Path
 from time import perf_counter
@@ -17,6 +18,7 @@ from pico2d import (
     close_canvas,
     delay,
     get_events,
+    load_font,
     load_image,
     open_canvas,
     update_canvas,
@@ -35,6 +37,43 @@ LOOP_DELAY = 0.01  # 루프가 CPU를 계속 점유하지 않도록 양보한다
 BASE_DIR = Path(__file__).resolve().parent
 SPRITE_SHEET_PATH = BASE_DIR / "assets" / "reimu_sheet.png"
 ANIMATION_DATA_PATH = BASE_DIR / "assets" / "animations.json"
+STATUS_FONT_SIZE = 16
+
+
+def load_status_font():
+    """사용자 글꼴을 우선하고, 없으면 운영체제 글꼴을 찾아 한 번 불러온다."""
+    windows_fonts = Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts"
+    candidates = [
+        BASE_DIR / "assets" / "ui.ttf",
+        windows_fonts / "malgun.ttf",
+        windows_fonts / "arial.ttf",
+        Path("/System/Library/Fonts/Supplemental/Arial.ttf"),
+        Path("/Library/Fonts/Arial.ttf"),
+        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+        Path("/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf"),
+    ]
+    for path in candidates:
+        if not path.is_file():
+            continue
+        try:
+            font = load_font(str(path), STATUS_FONT_SIZE)
+            if font is not None:
+                return font
+        except Exception as error:
+            # 상태 안내용 글꼴 실패가 핵심 애니메이션 재생을 막지 않게 한다.
+            print(f"상태 글꼴 로딩 실패 ({path.name}): {error}")
+
+    print("화면용 글꼴을 찾지 못했습니다. 재생 상태는 콘솔에서 확인할 수 있습니다.")
+    print("화면 표시가 필요하면 LEC08/assets/ui.ttf에 사용할 글꼴을 배치해 주세요.")
+    return None
+
+
+def draw_status(font, lines):
+    """캐릭터 아래 여백에 상태와 조작 안내를 표시한다."""
+    if font is None:
+        return
+    for index, line in enumerate(lines):
+        font.draw(16, 76 - index * 24, line, (35, 35, 35))
 
 
 def load_animations(path):
@@ -203,6 +242,7 @@ def main():
         # 이미지는 캔버스를 연 뒤 한 번만 불러오고, 반복문에서 재사용한다.
         sprite_sheet = load_image(str(SPRITE_SHEET_PATH))
         validate_frame_bounds(animations, sprite_sheet)
+        status_font = load_status_font()
         print(f"스프라이트 로딩 완료: {SPRITE_SHEET_PATH.name}")
         print("동작 선택: 1 대기 / 2 이동 / 3 일반 공격 / 4 특수 공격")
         print(f"자동 순환: 각 동작 {REPEAT_LIMIT}회 재생 → {WAIT_SECONDS:g}초 대기 → 다음 동작")
@@ -278,6 +318,16 @@ def main():
                 CANVAS_WIDTH / 2,
                 CANVAS_HEIGHT / 2,
             )
+            state_text = "PLAYING"
+            if playback_state == "waiting":
+                remaining = max(0.0, WAIT_SECONDS - (now - waiting_started_at))
+                state_text = f"WAIT {remaining:.1f}s"
+            # 시스템 글꼴의 한글 지원 여부와 관계없이 읽을 수 있도록 영문 ID를 사용한다.
+            draw_status(status_font, (
+                f"Animation: {animation_index + 1}/{len(animations)} {animation.get('id', 'animation')} | {state_text}",
+                f"Completed: {completed_loops}/{REPEAT_LIMIT} | Frame: {frame_index + 1}/{len(frames)} | FPS: {animation_fps:g}",
+                "1: Idle   2: Move   3: Attack   4: Special   ESC: Quit",
+            ))
             update_canvas()
             delay(LOOP_DELAY)
     finally:
