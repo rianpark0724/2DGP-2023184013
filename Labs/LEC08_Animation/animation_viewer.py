@@ -1,6 +1,7 @@
-"""Drill #8 애니메이션 뷰어 — 14단계: 가변 크기 프레임 렌더링 분리."""
+"""Drill #8 애니메이션 뷰어 — 15단계: 프레임 데이터와 영역 검사."""
 
 import json
+from math import isfinite
 from pathlib import Path
 from time import perf_counter
 
@@ -29,10 +30,85 @@ ANIMATION_DATA_PATH = BASE_DIR / "assets" / "animations.json"
 
 
 def load_animations(path):
-    """UTF-8 JSON에서 동작별 프레임 목록을 읽는다. 좌표는 좌상단 기준이다."""
-    with path.open("r", encoding="utf-8") as file:
-        data = json.load(file)
-    return data["animations"]
+    """UTF-8 JSON을 읽고 프레임 구조를 검사한다. 좌표는 좌상단 기준이다."""
+    try:
+        with path.open("r", encoding="utf-8") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"애니메이션 데이터 파일을 찾을 수 없습니다: {path}") from None
+    except json.JSONDecodeError as error:
+        raise ValueError(
+            f"{path.name}: JSON 문법 오류 ({error.lineno}행 {error.colno}열): {error.msg}"
+        ) from None
+
+    if not isinstance(data, dict):
+        raise ValueError(f"{path.name}: 최상위 데이터는 객체여야 합니다.")
+
+    animations = data.get("animations")
+    validate_animations(animations)
+    return animations
+
+
+def is_finite_number(value):
+    """문자열, 불리언, NaN, 무한대 등을 제외한 수인지 확인한다."""
+    if type(value) not in (int, float):
+        return False
+    try:
+        return isfinite(value)
+    except OverflowError:
+        return False
+
+
+def validate_animations(animations):
+    """이미지를 불러오기 전에 동작 목록과 프레임 수치를 검사한다."""
+    if not isinstance(animations, list) or not animations:
+        raise ValueError("animations는 하나 이상의 동작을 가진 목록이어야 합니다.")
+
+    for animation_index, animation in enumerate(animations, start=1):
+        if not isinstance(animation, dict):
+            raise ValueError(f"동작 {animation_index}: 동작 데이터는 객체여야 합니다.")
+        label = f"동작 {animation_index} ({animation.get('name', animation.get('id', '이름 없음'))})"
+        frames = animation.get("frames")
+        if not isinstance(frames, list) or not frames:
+            raise ValueError(f"{label}: frames는 하나 이상의 프레임을 가진 목록이어야 합니다.")
+
+        for frame_index, frame in enumerate(frames, start=1):
+            frame_label = f"{label}, 프레임 {frame_index}"
+            if not isinstance(frame, dict):
+                raise ValueError(f"{frame_label}: 프레임 데이터는 객체여야 합니다.")
+
+            for key in ("left", "top", "width", "height"):
+                value = frame.get(key)
+                minimum = 1 if key in ("width", "height") else 0
+                if type(value) is not int or value < minimum:
+                    raise ValueError(
+                        f"{frame_label}: {key}는 {minimum} 이상의 정수여야 합니다. 현재 값: {value!r}"
+                    )
+
+            for key, size_key in (("anchor_x", "width"), ("anchor_y", "height")):
+                if key not in frame:
+                    continue  # 기준점 생략 시 기존처럼 프레임 중심을 사용한다.
+                value = frame[key]
+                if not is_finite_number(value) or not 0 <= value <= frame[size_key]:
+                    raise ValueError(
+                        f"{frame_label}: {key}는 0~{frame[size_key]} 범위의 유한한 수여야 합니다. "
+                        f"현재 값: {value!r}"
+                    )
+
+
+def validate_frame_bounds(animations, sprite_sheet):
+    """실제로 불러온 이미지의 크기로 모든 프레임 영역을 검사한다."""
+    for animation_index, animation in enumerate(animations, start=1):
+        label = f"동작 {animation_index} ({animation.get('name', animation.get('id', '이름 없음'))})"
+        for frame_index, frame in enumerate(animation["frames"], start=1):
+            right = frame["left"] + frame["width"]
+            bottom = frame["top"] + frame["height"]
+            if right > sprite_sheet.w or bottom > sprite_sheet.h:
+                raise ValueError(
+                    f"{label}, 프레임 {frame_index}: 프레임 영역이 이미지 경계를 벗어납니다. "
+                    f"영역=({frame['left']}, {frame['top']}, {frame['width']}, {frame['height']}), "
+                    f"이미지={sprite_sheet.w}×{sprite_sheet.h}"
+                )
 
 
 def get_draw_position(frame, display_width, display_height, target_x, target_y):
@@ -79,6 +155,9 @@ def draw_frame(sprite_sheet, frame, display_scale, target_x, target_y):
 
 def main():
     """첫 동작을 계속 반복하고 창 닫기 또는 Escape로 종료한다."""
+    if not is_finite_number(ANIMATION_FPS) or ANIMATION_FPS <= 0:
+        raise ValueError("ANIMATION_FPS는 0보다 큰 유한한 수여야 합니다.")
+
     if not SPRITE_SHEET_PATH.is_file():
         raise FileNotFoundError(
             f"스프라이트 시트를 찾을 수 없습니다: {SPRITE_SHEET_PATH}\n"
@@ -98,6 +177,7 @@ def main():
     try:
         # 이미지는 캔버스를 연 뒤 한 번만 불러오고, 반복문에서 재사용한다.
         sprite_sheet = load_image(str(SPRITE_SHEET_PATH))
+        validate_frame_bounds(animations, sprite_sheet)
         print(f"스프라이트 로딩 완료: {SPRITE_SHEET_PATH.name}")
 
         # 이미지 로딩 시간은 재생 시간에서 제외한다.
