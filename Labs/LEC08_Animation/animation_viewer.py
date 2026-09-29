@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 15단계: 프레임 데이터와 영역 검사."""
+"""Drill #8 애니메이션 뷰어 — 16단계: 이동 동작 추가와 개별 미리보기."""
 
 import json
 from math import isfinite
@@ -23,6 +23,7 @@ CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 CHARACTER_HEIGHT_RATIO = 0.55  # 첫 프레임을 창 높이의 55% 크기로 표시한다.
 ANIMATION_FPS = 10  # 애니메이션 재생 속도. 화면 갱신 속도와 별개다.
+PREVIEW_ANIMATION_ID = "move"  # "idle"로 바꾸면 기존 대기 동작을 확인할 수 있다.
 LOOP_DELAY = 0.01  # 루프가 CPU를 계속 점유하지 않도록 양보한다.
 BASE_DIR = Path(__file__).resolve().parent
 SPRITE_SHEET_PATH = BASE_DIR / "assets" / "reimu_sheet.png"
@@ -154,7 +155,7 @@ def draw_frame(sprite_sheet, frame, display_scale, target_x, target_y):
 
 
 def main():
-    """첫 동작을 계속 반복하고 창 닫기 또는 Escape로 종료한다."""
+    """선택한 동작을 계속 반복하고 창 닫기 또는 Escape로 종료한다."""
     if not is_finite_number(ANIMATION_FPS) or ANIMATION_FPS <= 0:
         raise ValueError("ANIMATION_FPS는 0보다 큰 유한한 수여야 합니다.")
 
@@ -164,12 +165,18 @@ def main():
             "레이무 시트를 LEC08/assets/reimu_sheet.png로 배치해 주세요."
         )
 
-    # 이번 단계에서는 첫 동작만 반복 재생한다.
+    # 자동 순환을 구현하기 전에는 ID로 선택한 동작을 개별 확인한다.
     animations = load_animations(ANIMATION_DATA_PATH)
-    frames = animations[0]["frames"]
-    first_frame = frames[0]
+    animation = next(
+        (item for item in animations if item.get("id") == PREVIEW_ANIMATION_ID),
+        None,
+    )
+    if animation is None:
+        raise ValueError(f"미리보기 동작을 찾을 수 없습니다: {PREVIEW_ANIMATION_ID}")
+    frames = animation["frames"]
+    first_frame = animations[0]["frames"][0]
 
-    # 첫 프레임을 기준으로 배율을 한 번 계산한다. 가로·세로에 같은 배율을 쓴다.
+    # 대기의 첫 프레임을 기준으로 배율을 고정해 동작이 달라도 체격을 유지한다.
     display_scale = CANVAS_HEIGHT * CHARACTER_HEIGHT_RATIO / first_frame["height"]
 
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
@@ -179,6 +186,7 @@ def main():
         sprite_sheet = load_image(str(SPRITE_SHEET_PATH))
         validate_frame_bounds(animations, sprite_sheet)
         print(f"스프라이트 로딩 완료: {SPRITE_SHEET_PATH.name}")
+        print(f"재생 동작: {animation.get('name', PREVIEW_ANIMATION_ID)} ({len(frames)}프레임)")
 
         # 이미지 로딩 시간은 재생 시간에서 제외한다.
         animation_started_at = perf_counter()

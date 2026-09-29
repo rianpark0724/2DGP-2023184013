@@ -172,6 +172,120 @@
           "anchor_y": 89
         }
       ]
+    },
+    {
+      "id": "move",
+      "name": "이동 · 전진 비행",
+      "frames": [
+        {
+          "id": "move_01",
+          "left": 1,
+          "top": 458,
+          "width": 192,
+          "height": 175,
+          "anchor_x": 145,
+          "anchor_y": 92
+        },
+        {
+          "id": "move_02",
+          "left": 195,
+          "top": 457,
+          "width": 199,
+          "height": 176,
+          "anchor_x": 150,
+          "anchor_y": 93
+        },
+        {
+          "id": "move_03",
+          "left": 396,
+          "top": 469,
+          "width": 196,
+          "height": 164,
+          "anchor_x": 154,
+          "anchor_y": 81
+        },
+        {
+          "id": "move_04",
+          "left": 594,
+          "top": 480,
+          "width": 186,
+          "height": 153,
+          "anchor_x": 146,
+          "anchor_y": 70
+        },
+        {
+          "id": "move_05",
+          "left": 782,
+          "top": 480,
+          "width": 179,
+          "height": 153,
+          "anchor_x": 143,
+          "anchor_y": 70
+        },
+        {
+          "id": "move_06",
+          "left": 963,
+          "top": 481,
+          "width": 183,
+          "height": 151,
+          "anchor_x": 149,
+          "anchor_y": 69
+        },
+        {
+          "id": "move_07",
+          "left": 1148,
+          "top": 483,
+          "width": 187,
+          "height": 149,
+          "anchor_x": 150,
+          "anchor_y": 67
+        },
+        {
+          "id": "move_08",
+          "left": 1337,
+          "top": 489,
+          "width": 183,
+          "height": 143,
+          "anchor_x": 147,
+          "anchor_y": 61
+        },
+        {
+          "id": "move_09",
+          "left": 1522,
+          "top": 481,
+          "width": 183,
+          "height": 151,
+          "anchor_x": 142,
+          "anchor_y": 69
+        },
+        {
+          "id": "move_10",
+          "left": 1707,
+          "top": 476,
+          "width": 186,
+          "height": 156,
+          "anchor_x": 148,
+          "anchor_y": 74
+        },
+        {
+          "id": "move_11",
+          "left": 1895,
+          "top": 479,
+          "width": 181,
+          "height": 153,
+          "anchor_x": 142,
+          "anchor_y": 71
+        },
+        {
+          "id": "move_12",
+          "left": 2078,
+          "top": 482,
+          "width": 179,
+          "height": 150,
+          "anchor_x": 143,
+          "anchor_y": 68
+        }
+      ]
     }
   ]
 }
