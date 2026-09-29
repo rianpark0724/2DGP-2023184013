@@ -1,4 +1,4 @@
-"""Drill #8 애니메이션 뷰어 — 17단계: 일반 공격 동작 추가."""
+"""Drill #8 애니메이션 뷰어 — 18단계: 특수 공격 동작 추가."""
 
 import json
 from math import isfinite
@@ -23,7 +23,7 @@ CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 CHARACTER_HEIGHT_RATIO = 0.55  # 첫 프레임을 창 높이의 55% 크기로 표시한다.
 ANIMATION_FPS = 10  # 애니메이션 재생 속도. 화면 갱신 속도와 별개다.
-PREVIEW_ANIMATION_ID = "attack"  # "idle", "move", "attack" 중 미리 볼 동작을 선택한다.
+PREVIEW_ANIMATION_ID = "special"  # "idle", "move", "attack", "special" 중 선택한다.
 LOOP_DELAY = 0.01  # 루프가 CPU를 계속 점유하지 않도록 양보한다.
 BASE_DIR = Path(__file__).resolve().parent
 SPRITE_SHEET_PATH = BASE_DIR / "assets" / "reimu_sheet.png"
