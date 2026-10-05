@@ -147,6 +147,11 @@ def should_quit(events):
                 event.key == pico2d.SDLK_ESCAPE) for event in events)
 
 
+def draw_frame(sheet, frame):
+    sheet.clip_draw(*clip_rect(frame, sheet.h),
+                    CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2)
+
+
 def load_sheet(path):
     """실패한 파일 경로를 포함해 이미지 로드 오류를 전달한다."""
     try:
@@ -169,7 +174,7 @@ def main():
         validate_animations(ANIMATIONS, sheet.w, sheet.h)
         while not should_quit(pico2d.get_events()):
             pico2d.clear_canvas()
-            sheet.draw(CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2)
+            draw_frame(sheet, ANIMATIONS[0].frames[0])
             pico2d.update_canvas()
             pico2d.delay(LOOP_DELAY)
     except (OSError, ValueError) as error:
