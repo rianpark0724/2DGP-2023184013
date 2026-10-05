@@ -121,6 +121,26 @@ def clip_rect(frame, image_height):
             frame.width, frame.height)
 
 
+def validate_animations(animations, image_width, image_height):
+    if not animations:
+        raise ValueError('동작 목록이 비어 있습니다.')
+    ids = set()
+    for animation in animations:
+        if not animation.id or animation.id in ids:
+            raise ValueError(f'동작 ID가 비어 있거나 중복됩니다: {animation.id}')
+        ids.add(animation.id)
+        if not animation.frames:
+            raise ValueError(f'{animation.id}: 프레임이 없습니다.')
+        for index, frame in enumerate(animation.frames):
+            values = (frame.x, frame.y, frame.width, frame.height)
+            if (not all(type(value) is int for value in values) or
+                    frame.x < 0 or frame.y < 0 or
+                    frame.width <= 0 or frame.height <= 0 or
+                    frame.x + frame.width > image_width or
+                    frame.y + frame.height > image_height):
+                raise ValueError(f'{animation.id}[{index}]: 잘못된 프레임 영역 {frame}')
+
+
 def should_quit(events):
     return any(event.type == pico2d.SDL_QUIT or
                (event.type == pico2d.SDL_KEYDOWN and
@@ -146,12 +166,13 @@ def main():
     sheet = None
     try:
         sheet = load_sheet(SPRITE_PATH)
+        validate_animations(ANIMATIONS, sheet.w, sheet.h)
         while not should_quit(pico2d.get_events()):
             pico2d.clear_canvas()
             sheet.draw(CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2)
             pico2d.update_canvas()
             pico2d.delay(LOOP_DELAY)
-    except OSError as error:
+    except (OSError, ValueError) as error:
         print(error, file=sys.stderr)
         return 1
     finally:
