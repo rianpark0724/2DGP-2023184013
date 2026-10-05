@@ -38,6 +38,7 @@ def main():
         sheet = load_sheet(SPRITE_PATH)
         while not should_quit(pico2d.get_events()):
             pico2d.clear_canvas()
+            sheet.draw(CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2)
             pico2d.update_canvas()
             pico2d.delay(LOOP_DELAY)
     except OSError as error:
