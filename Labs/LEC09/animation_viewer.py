@@ -1,5 +1,6 @@
 """LEC09: Sonic 스프라이트 애니메이션 뷰어."""
 
+from dataclasses import dataclass
 from pathlib import Path
 import sys
 
@@ -35,6 +36,27 @@ ANIMATION_NOTES = (
 # 그림으로 분류했다. 파란 Sonic 동작과 연결되는 연속 프레임은 없다.
 # 불확실성: idle/look_up 경계와 dash_a/dash_b 명칭은 이미지 기반 해석이다.
 # 이 해석과 무관하게 본문 캐릭터 76장은 모두 포함한다.
+
+
+@dataclass(frozen=True)
+class Frame:
+    """좌상단 기준 원본 영역. 너비와 높이는 프레임마다 다를 수 있다."""
+    x: int
+    y: int
+    width: int
+    height: int
+
+
+@dataclass(frozen=True)
+class Animation:
+    id: str
+    frames: tuple[Frame, ...]
+
+
+def clip_rect(frame, image_height):
+    """원본 좌상단 영역을 pico2d의 좌하단 좌표로 변환한다."""
+    return (frame.x, image_height - frame.y - frame.height,
+            frame.width, frame.height)
 
 
 def should_quit(events):
