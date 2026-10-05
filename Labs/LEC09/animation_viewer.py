@@ -223,8 +223,22 @@ class Player:
     def wait_finished(self, now):
         return self.state == WAITING and now - self.wait_started >= WAIT_SECONDS
 
+    def next_animation(self, now):
+        if self.animation_index + 1 >= len(self.animations):
+            return
+        self.animation_index += 1
+        self.frame_index = 0
+        self.completed = 0
+        self.state = PLAYING
+        self.wait_started = None
+        self.clock = FrameClock(now)
+
     def update(self, now):
-        if self.state == WAITING or not self.clock.tick(now):
+        if self.state == WAITING:
+            if self.wait_finished(now):
+                self.next_animation(now)
+            return
+        if not self.clock.tick(now):
             return
         if self.frame_index + 1 < len(self.animation.frames):
             self.frame_index += 1
