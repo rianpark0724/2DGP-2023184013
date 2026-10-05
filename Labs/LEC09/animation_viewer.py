@@ -148,10 +148,21 @@ def should_quit(events):
                 event.key == pico2d.SDLK_ESCAPE) for event in events)
 
 
-def draw_frame(sheet, frame):
+AIRBORNE_IDS = {'roll', 'ball', 'ball_spin', 'turn', 'hurt', 'fall'}
+GROUND_Y = CANVAS_HEIGHT // 2 - 45 * SCALE // 2
+
+
+def draw_rect(animation, frame):
+    """지상은 하단 중앙, 공중·회전 포즈는 중심을 고정한다."""
+    width, height = frame.width * SCALE, frame.height * SCALE
+    center_y = (CANVAS_HEIGHT // 2 if animation.id in AIRBORNE_IDS
+                else GROUND_Y + height / 2)
+    return CANVAS_WIDTH // 2, center_y, width, height
+
+
+def draw_frame(sheet, animation, frame):
     sheet.clip_draw(*clip_rect(frame, sheet.h),
-                    CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2,
-                    frame.width * SCALE, frame.height * SCALE)
+                    *draw_rect(animation, frame))
 
 
 def load_sheet(path):
@@ -177,7 +188,7 @@ def main():
         validate_animations(ANIMATIONS, sheet.w, sheet.h)
         while not should_quit(pico2d.get_events()):
             pico2d.clear_canvas()
-            draw_frame(sheet, ANIMATIONS[0].frames[0])
+            draw_frame(sheet, ANIMATIONS[0], ANIMATIONS[0].frames[0])
             pico2d.update_canvas()
             pico2d.delay(LOOP_DELAY)
     except (OSError, ValueError) as error:
