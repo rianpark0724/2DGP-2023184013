@@ -53,6 +53,16 @@ class Animation:
     frames: tuple[Frame, ...]
 
 
+ANIMATIONS = (
+    Animation('idle', (
+        Frame(1, 39, 29, 39), Frame(31, 40, 26, 38),
+        Frame(58, 39, 29, 39), Frame(87, 40, 29, 38),
+        Frame(118, 40, 30, 38), Frame(150, 40, 30, 38),
+        Frame(182, 40, 29, 38),
+    )),
+)
+
+
 def clip_rect(frame, image_height):
     """원본 좌상단 영역을 pico2d의 좌하단 좌표로 변환한다."""
     return (frame.x, image_height - frame.y - frame.height,
