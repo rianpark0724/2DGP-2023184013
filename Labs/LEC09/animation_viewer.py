@@ -3,12 +3,15 @@
 from dataclasses import dataclass
 from pathlib import Path
 import sys
+from time import perf_counter
 
 import pico2d
 
 CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 SCALE = 4
+FPS = 10
+FRAME_SECONDS = 1.0 / FPS
 LOOP_DELAY = 0.005
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
@@ -178,6 +181,23 @@ def load_sheet(path):
         raise OSError(f'스프라이트 로드 실패: {path} ({error})') from error
 
 
+class FrameClock:
+    """단조 증가 시간으로 프레임 전환 시점을 계산한다."""
+
+    def __init__(self, now):
+        self.previous = now
+        self.elapsed = 0.0
+
+    def tick(self, now):
+        delta = max(0.0, now - self.previous)
+        self.previous = now
+        self.elapsed += delta
+        if self.elapsed + 1e-9 < FRAME_SECONDS:
+            return False
+        self.elapsed = max(0.0, self.elapsed - FRAME_SECONDS)
+        return True
+
+
 def main():
     """애니메이션 뷰어의 실행 진입점."""
     pico2d.open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
@@ -186,7 +206,9 @@ def main():
     try:
         sheet = load_sheet(SPRITE_PATH)
         validate_animations(ANIMATIONS, sheet.w, sheet.h)
+        clock = FrameClock(perf_counter())
         while not should_quit(pico2d.get_events()):
+            clock.tick(perf_counter())
             pico2d.clear_canvas()
             draw_frame(sheet, ANIMATIONS[0], ANIMATIONS[0].frames[0])
             pico2d.update_canvas()
