@@ -12,6 +12,7 @@ CANVAS_HEIGHT = 600
 SCALE = 4
 FPS = 10
 FRAME_SECONDS = 1.0 / FPS
+REPEAT_LIMIT = 5
 LOOP_DELAY = 0.005
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
@@ -203,6 +204,7 @@ class Player:
         self.animations = animations
         self.animation_index = 0
         self.frame_index = 0
+        self.completed = 0
         self.clock = FrameClock(now)
 
     @property
@@ -214,8 +216,14 @@ class Player:
         return self.animation.frames[self.frame_index]
 
     def update(self, now):
-        if self.clock.tick(now):
-            self.frame_index = (self.frame_index + 1) % len(self.animation.frames)
+        if self.completed >= REPEAT_LIMIT or not self.clock.tick(now):
+            return
+        if self.frame_index + 1 < len(self.animation.frames):
+            self.frame_index += 1
+        else:
+            self.completed += 1
+            if self.completed < REPEAT_LIMIT:
+                self.frame_index = 0
 
 
 def main():
