@@ -195,7 +195,12 @@ class FrameClock:
     def tick(self, now):
         delta = max(0.0, now - self.previous)
         self.previous = now
-        self.elapsed += delta
+        # 긴 중단의 밀린 시간을 소진하느라 프레임이 연속 생략되지 않게 한다.
+        # 한 번에 한 프레임만 전환하고, 다음 프레임은 새 표시 시간을 갖는다.
+        if delta >= FRAME_SECONDS:
+            self.elapsed = FRAME_SECONDS
+        else:
+            self.elapsed += delta
         if self.elapsed + 1e-9 < FRAME_SECONDS:
             return False
         self.elapsed = max(0.0, self.elapsed - FRAME_SECONDS)
