@@ -198,6 +198,26 @@ class FrameClock:
         return True
 
 
+class Player:
+    def __init__(self, animations, now):
+        self.animations = animations
+        self.animation_index = 0
+        self.frame_index = 0
+        self.clock = FrameClock(now)
+
+    @property
+    def animation(self):
+        return self.animations[self.animation_index]
+
+    @property
+    def frame(self):
+        return self.animation.frames[self.frame_index]
+
+    def update(self, now):
+        if self.clock.tick(now):
+            self.frame_index = (self.frame_index + 1) % len(self.animation.frames)
+
+
 def main():
     """애니메이션 뷰어의 실행 진입점."""
     pico2d.open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
@@ -206,11 +226,11 @@ def main():
     try:
         sheet = load_sheet(SPRITE_PATH)
         validate_animations(ANIMATIONS, sheet.w, sheet.h)
-        clock = FrameClock(perf_counter())
+        player = Player(ANIMATIONS, perf_counter())
         while not should_quit(pico2d.get_events()):
-            clock.tick(perf_counter())
+            player.update(perf_counter())
             pico2d.clear_canvas()
-            draw_frame(sheet, ANIMATIONS[0], ANIMATIONS[0].frames[0])
+            draw_frame(sheet, player.animation, player.frame)
             pico2d.update_canvas()
             pico2d.delay(LOOP_DELAY)
     except (OSError, ValueError) as error:
