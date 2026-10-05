@@ -224,9 +224,7 @@ class Player:
         return self.state == WAITING and now - self.wait_started >= WAIT_SECONDS
 
     def next_animation(self, now):
-        if self.animation_index + 1 >= len(self.animations):
-            return
-        self.animation_index += 1
+        self.animation_index = (self.animation_index + 1) % len(self.animations)
         self.frame_index = 0
         self.completed = 0
         self.state = PLAYING
