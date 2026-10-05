@@ -13,6 +13,9 @@ SCALE = 4
 FPS = 10
 FRAME_SECONDS = 1.0 / FPS
 REPEAT_LIMIT = 5
+WAIT_SECONDS = 1.0
+PLAYING = 'PLAYING'
+WAITING = 'WAITING'
 LOOP_DELAY = 0.005
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
@@ -205,6 +208,8 @@ class Player:
         self.animation_index = 0
         self.frame_index = 0
         self.completed = 0
+        self.state = PLAYING
+        self.wait_started = None
         self.clock = FrameClock(now)
 
     @property
@@ -215,8 +220,11 @@ class Player:
     def frame(self):
         return self.animation.frames[self.frame_index]
 
+    def wait_finished(self, now):
+        return self.state == WAITING and now - self.wait_started >= WAIT_SECONDS
+
     def update(self, now):
-        if self.completed >= REPEAT_LIMIT or not self.clock.tick(now):
+        if self.state == WAITING or not self.clock.tick(now):
             return
         if self.frame_index + 1 < len(self.animation.frames):
             self.frame_index += 1
@@ -224,6 +232,9 @@ class Player:
             self.completed += 1
             if self.completed < REPEAT_LIMIT:
                 self.frame_index = 0
+            else:
+                self.state = WAITING
+                self.wait_started = now
 
 
 def main():
