@@ -8,6 +8,7 @@ import pico2d
 
 CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
+SCALE = 4
 LOOP_DELAY = 0.005
 SPRITE_PATH = Path(__file__).resolve().with_name('sonic-sprite.png')
 
@@ -149,7 +150,8 @@ def should_quit(events):
 
 def draw_frame(sheet, frame):
     sheet.clip_draw(*clip_rect(frame, sheet.h),
-                    CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2)
+                    CANVAS_WIDTH // 2, CANVAS_HEIGHT // 2,
+                    frame.width * SCALE, frame.height * SCALE)
 
 
 def load_sheet(path):
@@ -168,6 +170,7 @@ def load_sheet(path):
 def main():
     """애니메이션 뷰어의 실행 진입점."""
     pico2d.open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+    pico2d.hide_lattice()
     sheet = None
     try:
         sheet = load_sheet(SPRITE_PATH)
