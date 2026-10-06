@@ -12,7 +12,7 @@ ASSET_DIR = Path(__file__).resolve().parent
 FRAME_SIZE = 100
 FRAME_COUNT = 8
 ANIMATION_FPS = 10
-MOVE_SPEED = 200
+MOVE_SPEED = 400
 MAX_DT = 0.1
 ANIMATION_ROWS = {
     'idle_right': 300, 'idle_left': 200,
