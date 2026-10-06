@@ -12,6 +12,7 @@ FRAME_SIZE = 100
 FRAME_COUNT = 8
 ANIMATION_FPS = 10
 ANIMATION_ROWS = {'idle_right': 300, 'idle_left': 200}
+ARROW_KEYS = {p2.SDLK_LEFT, p2.SDLK_RIGHT, p2.SDLK_UP, p2.SDLK_DOWN}
 
 
 class Character:
@@ -39,12 +40,16 @@ def load_asset(name):
         raise RuntimeError(f'이미지 로드 실패: {path}') from error
 
 
-def handle_events():
+def handle_events(pressed_keys):
     for event in p2.get_events():
         if event.type == p2.SDL_QUIT:
             return False
         if event.type == p2.SDL_KEYDOWN and event.key == p2.SDLK_ESCAPE:
             return False
+        if event.type == p2.SDL_KEYDOWN and event.key in ARROW_KEYS:
+            pressed_keys.add(event.key)
+        elif event.type == p2.SDL_KEYUP and event.key in ARROW_KEYS:
+            pressed_keys.discard(event.key)
     return True
 
 
@@ -64,8 +69,9 @@ def main():
         background = load_asset('TUK_GROUND.png')
         character = load_asset('animation_sheet.png')
         boy = Character()
+        pressed_keys = set()
         previous_time = perf_counter()
-        while handle_events():
+        while handle_events(pressed_keys):
             current_time = perf_counter()
             dt = current_time - previous_time
             previous_time = current_time
