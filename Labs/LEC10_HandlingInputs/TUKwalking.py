@@ -26,14 +26,20 @@ def handle_events():
     return True
 
 
+def draw(background, character):
+    p2.clear_canvas()
+    background.draw(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2,
+                    CANVAS_WIDTH, CANVAS_HEIGHT)
+    p2.update_canvas()
+
+
 def main():
     p2.open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
         background = load_asset('TUK_GROUND.png')
         character = load_asset('animation_sheet.png')
         while handle_events():
-            p2.clear_canvas()
-            p2.update_canvas()
+            draw(background, character)
             p2.delay(0.01)
     except RuntimeError as error:
         print(error)
