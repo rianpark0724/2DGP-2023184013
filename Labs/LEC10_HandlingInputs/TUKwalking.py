@@ -7,6 +7,15 @@ import pico2d as p2
 CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 ASSET_DIR = Path(__file__).resolve().parent
+FRAME_SIZE = 100
+FRAME_COUNT = 8
+
+
+class Character:
+    def __init__(self):
+        self.x = CANVAS_WIDTH / 2
+        self.y = CANVAS_HEIGHT / 2
+        self.frame = 0
 
 
 def load_asset(name):
@@ -26,10 +35,12 @@ def handle_events():
     return True
 
 
-def draw(background, character):
+def draw(background, character, boy):
     p2.clear_canvas()
     background.draw(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2,
                     CANVAS_WIDTH, CANVAS_HEIGHT)
+    character.clip_draw(boy.frame * FRAME_SIZE, 300, FRAME_SIZE, FRAME_SIZE,
+                        boy.x, boy.y, FRAME_SIZE, FRAME_SIZE)
     p2.update_canvas()
 
 
@@ -38,8 +49,9 @@ def main():
     try:
         background = load_asset('TUK_GROUND.png')
         character = load_asset('animation_sheet.png')
+        boy = Character()
         while handle_events():
-            draw(background, character)
+            draw(background, character, boy)
             p2.delay(0.01)
     except RuntimeError as error:
         print(error)
