@@ -13,6 +13,7 @@ FRAME_SIZE = 100
 FRAME_COUNT = 8
 ANIMATION_FPS = 10
 MOVE_SPEED = 200
+MAX_DT = 0.1
 ANIMATION_ROWS = {
     'idle_right': 300, 'idle_left': 200,
     'move_right': 100, 'move_left': 0,
@@ -67,6 +68,10 @@ def load_asset(name):
         raise RuntimeError(f'이미지 로드 실패: {path}') from error
 
 
+def frame_dt(previous_time, current_time):
+    return max(0.0, min(current_time - previous_time, MAX_DT))
+
+
 def handle_events(pressed_keys):
     for event in p2.get_events():
         if event.type == p2.SDL_QUIT:
@@ -99,8 +104,11 @@ def main():
         pressed_keys = set()
         previous_time = perf_counter()
         while handle_events(pressed_keys):
+            # pico2d filters out SDL window events; poll focus instead.
+            if not p2.SDL_GetKeyboardFocus():
+                pressed_keys.clear()
             current_time = perf_counter()
-            dt = current_time - previous_time
+            dt = frame_dt(previous_time, current_time)
             previous_time = current_time
             boy.update_movement(pressed_keys, dt)
             boy.update_animation(dt)
