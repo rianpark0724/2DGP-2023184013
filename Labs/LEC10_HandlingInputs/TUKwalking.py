@@ -11,6 +11,7 @@ ASSET_DIR = Path(__file__).resolve().parent
 FRAME_SIZE = 100
 FRAME_COUNT = 8
 ANIMATION_FPS = 10
+MOVE_SPEED = 200
 ANIMATION_ROWS = {'idle_right': 300, 'idle_left': 200}
 ARROW_KEYS = {p2.SDLK_LEFT, p2.SDLK_RIGHT, p2.SDLK_UP, p2.SDLK_DOWN}
 
@@ -23,6 +24,10 @@ class Character:
         self.facing = 'right'
         self.state = 'idle_right'
         self.animation_time = 0.0
+
+    def update_movement(self, pressed_keys, dt):
+        dx = int(p2.SDLK_RIGHT in pressed_keys) - int(p2.SDLK_LEFT in pressed_keys)
+        self.x += dx * MOVE_SPEED * dt
 
     def update_animation(self, dt):
         self.animation_time += dt
@@ -75,6 +80,7 @@ def main():
             current_time = perf_counter()
             dt = current_time - previous_time
             previous_time = current_time
+            boy.update_movement(pressed_keys, dt)
             boy.update_animation(dt)
             draw(background, character, boy)
             p2.delay(0.01)
