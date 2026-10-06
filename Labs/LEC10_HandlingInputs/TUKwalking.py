@@ -13,7 +13,10 @@ FRAME_SIZE = 100
 FRAME_COUNT = 8
 ANIMATION_FPS = 10
 MOVE_SPEED = 200
-ANIMATION_ROWS = {'idle_right': 300, 'idle_left': 200}
+ANIMATION_ROWS = {
+    'idle_right': 300, 'idle_left': 200,
+    'move_right': 100, 'move_left': 0,
+}
 ARROW_KEYS = {p2.SDLK_LEFT, p2.SDLK_RIGHT, p2.SDLK_UP, p2.SDLK_DOWN}
 
 
@@ -31,7 +34,12 @@ class Character:
         dy = int(p2.SDLK_UP in pressed_keys) - int(p2.SDLK_DOWN in pressed_keys)
         if dx:
             self.facing = 'right' if dx > 0 else 'left'
-        self.state = f'idle_{self.facing}'
+        action = 'move' if dx or dy else 'idle'
+        next_state = f'{action}_{self.facing}'
+        if next_state != self.state:
+            self.state = next_state
+            self.frame = 0
+            self.animation_time = 0.0
         length = hypot(dx, dy)
         if length:
             dx /= length
