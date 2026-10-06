@@ -29,6 +29,9 @@ class Character:
     def update_movement(self, pressed_keys, dt):
         dx = int(p2.SDLK_RIGHT in pressed_keys) - int(p2.SDLK_LEFT in pressed_keys)
         dy = int(p2.SDLK_UP in pressed_keys) - int(p2.SDLK_DOWN in pressed_keys)
+        if dx:
+            self.facing = 'right' if dx > 0 else 'left'
+        self.state = f'idle_{self.facing}'
         length = hypot(dx, dy)
         if length:
             dx /= length
