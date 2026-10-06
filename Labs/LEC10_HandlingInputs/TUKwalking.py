@@ -46,6 +46,10 @@ class Character:
             dy /= length
         self.x += dx * MOVE_SPEED * dt
         self.y += dy * MOVE_SPEED * dt
+        # Keep the entire sprite cell inside the canvas, including corners.
+        half_size = FRAME_SIZE / 2
+        self.x = max(half_size, min(self.x, CANVAS_WIDTH - half_size))
+        self.y = max(half_size, min(self.y, CANVAS_HEIGHT - half_size))
 
     def update_animation(self, dt):
         self.animation_time += dt
