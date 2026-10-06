@@ -27,7 +27,9 @@ class Character:
 
     def update_movement(self, pressed_keys, dt):
         dx = int(p2.SDLK_RIGHT in pressed_keys) - int(p2.SDLK_LEFT in pressed_keys)
+        dy = int(p2.SDLK_UP in pressed_keys) - int(p2.SDLK_DOWN in pressed_keys)
         self.x += dx * MOVE_SPEED * dt
+        self.y += dy * MOVE_SPEED * dt
 
     def update_animation(self, dt):
         self.animation_time += dt
