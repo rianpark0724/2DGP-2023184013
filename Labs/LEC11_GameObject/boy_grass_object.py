@@ -16,7 +16,7 @@ class Grass:
 class Character:
     def __init__(self):
         self.image = load_image("animation_sheet.png")
-        self.x, self.y = 0, 90
+        self.x, self.y = random.randint(0, 100), 90
         self.frame = 0
 
     def draw(self):
@@ -42,22 +42,24 @@ def reset_world():
     global grass
     grass = Grass()
 
-    global character
-    character = Character()
+    global team
+    team = [Character() for i in range(11)]
 
 def update_world():
     global grass
     grass.update()
 
-    global character
-    character.update()
+    global team
+    for character in team:
+        character.update()
 
 def render_world():
     global grass
-    global character
+    global team
     clear_canvas()
     grass.draw()
-    character.draw()
+    for character in team:
+        character.draw()
     update_canvas()
 
 open_canvas()
@@ -67,6 +69,6 @@ while running:
     handle_events()
     update_world()
     render_world()
-    delay(0.01)
+    delay(0.1)
 
 close_canvas()
