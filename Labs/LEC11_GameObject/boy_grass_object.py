@@ -14,7 +14,17 @@ class Grass:
         pass
 
 class Character:
-    pass
+    def __init__(self):
+        self.image = load_image("animation_sheet.png")
+        self.x, self.y = 0, 90
+        self.frame = 0
+
+    def draw(self):
+        self.image.clip_draw(self.frame * 100, 100, 100, 100, self.x, self.y)
+
+    def update(self):
+        self.frame = (self.frame + 1) % 8
+        self.x += 5
 
 def handle_events():
     global running
@@ -32,14 +42,22 @@ def reset_world():
     global grass
     grass = Grass()
 
+    global character
+    character = Character()
+
 def update_world():
     global grass
     grass.update()
 
+    global character
+    character.update()
+
 def render_world():
     global grass
+    global character
     clear_canvas()
     grass.draw()
+    character.draw()
     update_canvas()
 
 open_canvas()
