@@ -3,7 +3,13 @@ import random
 
 
 # Game object class here
+class Grass:
+    pass
 
+class Character:
+    pass
+
+character = pico2d_image_loader("character.png")
 
 def handle_events():
     global running
