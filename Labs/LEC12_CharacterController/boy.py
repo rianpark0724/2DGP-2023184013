@@ -7,7 +7,16 @@ class Boy:
         self.frame = 0
         self.face_dir = 1
         self.image = load_image('animation_sheet.png')
-        self.machine = Machine(model=self, states=['IDLE'], initial='IDLE', auto_transitions=False)
+        self.machine = Machine(
+            model=self,
+            states=['IDLE', 'SLEEP'],
+            transitions=[
+                {'trigger': 'sleep', 'source': 'IDLE', 'dest': 'SLEEP'},
+                {'trigger': 'wake', 'source': 'SLEEP', 'dest': 'IDLE'},
+            ],
+            initial='IDLE',
+            auto_transitions=False,
+        )
 
     def update(self):
         if self.state == 'IDLE':
