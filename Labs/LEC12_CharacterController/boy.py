@@ -1,3 +1,5 @@
+from math import pi
+
 from pico2d import load_image
 from transitions import Machine
 
@@ -23,7 +25,8 @@ class Boy:
             self.frame = (self.frame + 1) % 8
 
     def draw(self):
-        if self.face_dir == 1:
-            self.image.clip_draw(self.frame * 100, 300, 100, 100, self.x, self.y)
-        else:
-            self.image.clip_draw(self.frame * 100, 200, 100, 100, self.x, self.y)
+        angle = self.face_dir * pi / 2 if self.state == 'SLEEP' else 0
+        bottom = 300 if self.face_dir == 1 else 200
+        self.image.clip_composite_draw(
+            self.frame * 100, bottom, 100, 100, angle, '', self.x, self.y, 100, 100
+        )
