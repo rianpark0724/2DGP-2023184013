@@ -14,6 +14,7 @@ from boy import Boy
 def handle_events():
     global running
     global last_input_time
+    global pressed_directions
 
     event_list = get_events()
     for event in event_list:
@@ -22,19 +23,36 @@ def handle_events():
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 running = False
+            elif event.key in (SDLK_LEFT, SDLK_RIGHT):
+                last_input_time = time.monotonic()
+                if event.key in pressed_directions:
+                    pressed_directions.remove(event.key)
+                pressed_directions.append(event.key)
+                boy.start_running(-1 if event.key == SDLK_LEFT else 1)
             else:
                 last_input_time = time.monotonic()
                 if event.key == SDLK_SPACE and boy.state == 'SLEEP':
                     boy.wake()
+        elif event.type == SDL_KEYUP and event.key in (SDLK_LEFT, SDLK_RIGHT):
+            last_input_time = time.monotonic()
+            if event.key in pressed_directions:
+                pressed_directions.remove(event.key)
+            if pressed_directions:
+                direction = -1 if pressed_directions[-1] == SDLK_LEFT else 1
+                boy.start_running(direction)
+            else:
+                boy.stop_running()
 
 
 def reset_world():
     global world
     global boy
     global last_input_time
+    global pressed_directions
 
     world = []
     last_input_time = time.monotonic()
+    pressed_directions = []
 
     grass = Grass()
     world.append(grass)
