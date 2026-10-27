@@ -38,11 +38,13 @@ class Boy:
             self.x = max(0, min(800, self.x + self.face_dir * 5))
 
     def draw(self):
-        angle = self.face_dir * pi / 2 if self.state == 'SLEEP' else 0
+        is_sleeping = self.state == 'SLEEP'
+        angle = self.face_dir * pi / 2 if is_sleeping else 0
+        draw_y = self.y - 20 if is_sleeping else self.y
         if self.state == 'RUN':
             bottom = 100 if self.face_dir == 1 else 0
         else:
             bottom = 300 if self.face_dir == 1 else 200
         self.image.clip_composite_draw(
-            self.frame * 100, bottom, 100, 100, angle, '', self.x, self.y, 100, 100
+            self.frame * 100, bottom, 100, 100, angle, '', self.x, draw_y, 100, 100
         )
