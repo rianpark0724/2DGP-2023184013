@@ -5,6 +5,9 @@ from sdl2 import (SDL_KEYDOWN, SDL_KEYUP, SDLK_LEFT, SDLK_RIGHT,
                   SDLK_SPACE)
 from transitions import Machine
 
+import game_world
+from ball import Ball
+
 
 class Boy:
     def __init__(self):
@@ -46,8 +49,8 @@ class Boy:
     def handle_event(self, event):
         if event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
             if self.state in ('IDLE', 'RUN'):
-                direction = 'right' if self.face_dir == 1 else 'left'
-                print(f'Shooting Ball : {direction}')
+                self.idle_started_at = get_time()
+                game_world.add_object(Ball(self.x, self.y, self.face_dir))
             elif self.state == 'SLEEP':
                 self.wake_up()
             return
