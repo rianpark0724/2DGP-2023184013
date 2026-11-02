@@ -44,10 +44,11 @@ class Boy:
         self.frame = 0
 
     def handle_event(self, event):
-        if (event.type == SDL_KEYDOWN and
-                event.key == SDLK_SPACE and
-                self.state == 'SLEEP'):
-            self.wake_up()
+        if event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
+            if self.state in ('IDLE', 'RUN'):
+                print('Shooting Ball')
+            elif self.state == 'SLEEP':
+                self.wake_up()
             return
 
         if (event.type not in (SDL_KEYDOWN, SDL_KEYUP) or
