@@ -46,7 +46,8 @@ class Boy:
     def handle_event(self, event):
         if event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
             if self.state in ('IDLE', 'RUN'):
-                print('Shooting Ball')
+                direction = 'right' if self.face_dir == 1 else 'left'
+                print(f'Shooting Ball : {direction}')
             elif self.state == 'SLEEP':
                 self.wake_up()
             return
