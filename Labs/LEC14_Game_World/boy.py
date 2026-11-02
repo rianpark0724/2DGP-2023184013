@@ -11,7 +11,7 @@ from ball import Ball
 
 class Boy:
     def __init__(self):
-        self.x, self.y = 400, 90
+        self.x, self.y = 400, 30
         self.frame = 0
         self.image = load_image('animation_sheet.png')
         self.idle_started_at = get_time()
@@ -50,7 +50,7 @@ class Boy:
         if event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
             if self.state in ('IDLE', 'RUN'):
                 self.idle_started_at = get_time()
-                game_world.add_object(Ball(self.x, self.y, self.face_dir))
+                game_world.add_object(Ball(self.x, self.y, self.face_dir), 1)
             elif self.state == 'SLEEP':
                 self.wake_up()
             return
