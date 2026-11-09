@@ -1,14 +1,14 @@
 from pico2d import *
-import playMode
+import logoMode
 
 open_canvas()
-playMode.init()
+logoMode.init()
 # game loop
-while playMode.running:
-    playMode.handle_events()
-    playMode.update()
-    playMode.render()
+while logoMode.running:
+    logoMode.handle_events()
+    logoMode.update()
+    logoMode.render()
     delay(0.01)
 # finalization code
-playMode.finish()
+logoMode.finish()
 close_canvas()
