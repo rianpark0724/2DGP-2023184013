@@ -1,7 +1,7 @@
 import game_framework
 from pico2d import *
-import logoMode
+import titleMode
 
 open_canvas()
-game_framework.run(logoMode)
+game_framework.run(titleMode)
 close_canvas()

@@ -17,7 +17,6 @@ def handle_events():
             boy.handle_event(event)
 
 
-
 def init():
     global boy
 
@@ -27,7 +26,6 @@ def init():
 
     grass = Grass()
     game_world.add_oject(grass, 0)
-
 
 
 def update():
