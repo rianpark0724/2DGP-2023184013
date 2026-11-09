@@ -1,18 +1,21 @@
+import game_framework
 from pico2d import *
 import game_world
 from boy import Boy
 from grass import Grass
+import titleMode
+import pauseMode
 
 
 def handle_events():
-    global running
-
     event_list = get_events()
     for event in event_list:
         if event.type == SDL_QUIT:
-            running = False
+            game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            running = False
+            game_framework.change_mode(titleMode)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
+            game_framework.push_mode(pauseMode)
         else:
             boy.handle_event(event)
 
@@ -41,4 +44,9 @@ def finish():
     pass
 
 
-running = True
+def pause():
+    pass
+
+
+def resume():
+    pass

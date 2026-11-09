@@ -1,5 +1,6 @@
 import game_framework 
 from pico2d import *
+import titleMode
 
 image = None
 logo_start_time = 0.0
@@ -18,7 +19,7 @@ def update():
     global logo_start_time
 
     if get_time() - logo_start_time >= 2.0:
-        game_framework.quit()
+        game_framework.change_mode(titleMode)
 
 def render():
     global image
@@ -27,4 +28,6 @@ def render():
     update_canvas()
 
 def handle_events():
-    events = get_events()
+    for event in get_events():
+        if event.type == SDL_QUIT:
+            game_framework.quit()
