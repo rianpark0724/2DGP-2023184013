@@ -28,10 +28,21 @@ def init():
     global boy
 
     boy = Boy()
-    game_world.add_oject(boy)
+    game_world.add_object(boy)
 
     grass = Grass()
-    game_world.add_oject(grass, 0)
+    game_world.add_object(grass, 0)
+
+    global balls
+    balls = [Ball(random.randint(100, 1700), 60, 0) for i in range(30)]
+    game_world.add_objects(balls, 1)
+    game_world.add_collision_pair("grass:ball", grass, None)
+    game_world.add_collision_pair("boy:ball", boy, None)
+    for ball in balls:
+        game_world.add_collision_pair("boy:ball", None, ball)
+    
+    zombies = [Zombie() for _ in range(4)]
+    game_world.add_objects(zombies, 1)
 
 
 def pause():
@@ -50,12 +61,13 @@ def finish():
 
 def update():
     game_world.update()
+    game_world.handle_collision()
+
 
 def render():
     clear_canvas()
     game_world.render()
     update_canvas()
-
 
 
 
